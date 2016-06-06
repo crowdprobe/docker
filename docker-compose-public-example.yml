@@ -1,0 +1,27 @@
+adbd:
+  image: sorccu/adb
+  restart: unless-stopped
+  privileged: true
+  volumes:
+    - "/dev/bus/usb:/dev/bus/usb"
+browsermob:
+  image: crowdprobe/browsermob
+  restart: unless-stopped
+  net: "container:adbd"
+seleniumAndroid:
+  image: crowdprobe/selenium-android
+  restart: unless-stopped
+  net: "container:adbd"
+wifiAp:
+  image: crowdprobe/wifi-ap
+  privileged: true
+  restart: unless-stopped
+  net: host
+  volumes:
+    - "/dev/urandom:/dev/random"
+Test:
+  image: crowdprobe/selenium-android-ruby-tester
+  net: "container:adbd"
+  restart: unless-stopped
+  command: bash -c "sleep 20; while true; do ruby android-selenium-test.rb; done"
+
